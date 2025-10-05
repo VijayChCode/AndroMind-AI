@@ -1,7 +1,11 @@
 import axios from 'axios'
 
 // Configure API base URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://andromind-ai.onrender.com/api'
+const API_BASE_URL = import.meta.env.VITE_API_URL 
+  ? (import.meta.env.VITE_API_URL.endsWith('/api') 
+      ? import.meta.env.VITE_API_URL 
+      : import.meta.env.VITE_API_URL + '/api')
+  : 'https://andromind-ai.onrender.com/api'
 
 console.log('🔧 API Service initialized with baseURL:', API_BASE_URL)
 console.log('🌍 Environment VITE_API_URL:', import.meta.env.VITE_API_URL)

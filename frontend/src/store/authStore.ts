@@ -32,7 +32,12 @@ interface AuthState {
 }
 
 // Debug logging
-console.log('🔗 API Base URL:', import.meta.env.VITE_API_URL || 'https://andromind-ai.onrender.com/api')
+const API_BASE_URL = import.meta.env.VITE_API_URL 
+  ? (import.meta.env.VITE_API_URL.endsWith('/api') 
+      ? import.meta.env.VITE_API_URL 
+      : import.meta.env.VITE_API_URL + '/api')
+  : 'https://andromind-ai.onrender.com/api'
+console.log('🔗 API Base URL:', API_BASE_URL)
 console.log('🌍 Environment:', import.meta.env.MODE)
 
 export const useAuthStore = create<AuthState>()(
