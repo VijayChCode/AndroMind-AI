@@ -18,9 +18,10 @@ const PORT = process.env.PORT || 5000
 connectDB()
 
 // Middleware
+console.log('🔧 Setting up middleware...')
 app.use(helmet())
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true
 }))
 app.use(cookieParser())
@@ -29,17 +30,22 @@ app.use(express.urlencoded({ extended: true }))
 
 // Rate limiting
 app.use(rateLimiter)
+console.log('✅ Middleware configured')
 
 // Routes
+console.log('🛣️  Setting up routes...')
 app.use('/api/auth', authRouter)
 app.use('/api/chat', chatRouter)
+console.log('✅ Routes configured')
 
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    version: '1.0.0'
+    version: '1.0.0',
+    database: 'Connected',
+    uptime: process.uptime()
   })
 })
 
@@ -52,6 +58,15 @@ app.use('*', (req, res) => {
 })
 
 app.listen(PORT, () => {
-  console.log(`🚀 AndroMind AI Backend running on port ${PORT}`)
+  console.log('')
+  console.log('🎉 ==========================================')
+  console.log('🚀 AndroMind AI Backend Server Started!')
+  console.log('🎉 ==========================================')
+  console.log(`🌐 Server running on: http://localhost:${PORT}`)
   console.log(`📡 Health check: http://localhost:${PORT}/api/health`)
+  console.log(`🔐 Auth endpoints: http://localhost:${PORT}/api/auth`)
+  console.log(`💬 Chat endpoints: http://localhost:${PORT}/api/chat`)
+  console.log(`🌍 CORS Origin: ${process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:5173'}`)
+  console.log('🎉 ==========================================')
+  console.log('')
 })
