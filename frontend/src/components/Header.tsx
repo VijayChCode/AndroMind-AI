@@ -6,7 +6,7 @@ import { useState } from 'react'
 import SettingsModal from './SettingsModal'
 
 const Header = () => {
-  const { sidebarOpen, toggleSidebar, theme, setTheme, createChat } = useChatStore()
+  const { toggleSidebar, theme, setTheme, createChat } = useChatStore()
   const { user, logout } = useAuthStore()
   const [isCreating, setIsCreating] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -14,7 +14,7 @@ const Header = () => {
 
   const handleNewChat = async () => {
     setIsCreating(true)
-    const chatId = createChat('New Chat')
+    createChat('New Chat')
     // You could add a loading animation here
     setTimeout(() => setIsCreating(false), 500)
   }

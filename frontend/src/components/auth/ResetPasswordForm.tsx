@@ -47,7 +47,7 @@ const ResetPasswordForm = ({ email, token, onSuccess, onSwitchToLogin }: ResetPa
   const password = watch('password')
 
   const onSubmit = async (data: ResetPasswordFormData) => {
-    const result = await resetPassword(email, token, data.password)
+    const result = await resetPassword(data.password, token)
     
     if (result.success) {
       toast.success('Password reset successfully! You can now sign in.')

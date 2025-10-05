@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, Mic, MicOff, Paperclip, Download, Copy, ThumbsUp, ThumbsDown } from 'lucide-react'
+import { Send, Mic, MicOff, Paperclip, Download, Copy } from 'lucide-react'
 import { useChatStore } from '../store/chatStore'
 import MessageBubble from './MessageBubble'
 import TypingIndicator from './TypingIndicator'
@@ -45,7 +45,7 @@ const ChatInterface = () => {
 
     // Create chat if none exists
     if (!currentChatId) {
-      const chatId = createChat(userMessage.slice(0, 50) + '...')
+      createChat(userMessage.slice(0, 50) + '...')
     }
 
     // Simulate AI response

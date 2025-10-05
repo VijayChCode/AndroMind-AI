@@ -11,8 +11,8 @@ import { useAuthStore } from './store/authStore'
 import LegalPages from './components/legal/LegalPages'
 
 function App() {
-  const { theme, setTheme } = useChatStore()
-  const { isAuthenticated, user, refreshAuthToken } = useAuthStore()
+  const { theme } = useChatStore()
+  const { isAuthenticated, refreshAuthToken } = useAuthStore()
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [showLegalPages, setShowLegalPages] = useState(false)
   const [isInitializing, setIsInitializing] = useState(true)

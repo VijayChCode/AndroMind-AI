@@ -3,7 +3,6 @@ import {
   MessageSquare, 
   Trash2, 
   Edit3, 
-  MoreVertical, 
   Search,
   Download,
   Upload,
