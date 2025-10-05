@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, Mic, MicOff, Paperclip, Download, Copy } from 'lucide-react'
 import { useChatStore } from '../store/chatStore'
+import { chatAPI } from '../services/api'
 import MessageBubble from './MessageBubble'
 import TypingIndicator from './TypingIndicator'
 import toast from 'react-hot-toast'
@@ -52,27 +53,11 @@ const ChatInterface = () => {
     setTyping(true)
     
     try {
-      // Here you would make an API call to your backend
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: userMessage,
-          chatId: currentChatId
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to get response')
-      }
-
-      const data = await response.json()
+      const response = await chatAPI.sendMessage(userMessage, currentChatId)
       
       // Add AI response
       addMessage({
-        content: data.response,
+        content: response.data.response,
         role: 'assistant'
       })
     } catch (error) {

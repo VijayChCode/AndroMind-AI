@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import Cookies from 'js-cookie'
-import axios from 'axios'
+import { authAPI } from '../services/api'
 
 export interface User {
   id: string
@@ -31,9 +31,9 @@ interface AuthState {
   setLoading: (loading: boolean) => void
 }
 
-// Configure axios defaults
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
-axios.defaults.baseURL = API_BASE_URL
+// Debug logging
+console.log('🔗 API Base URL:', import.meta.env.VITE_API_URL || 'https://andromind-ai.onrender.com/api')
+console.log('🌍 Environment:', import.meta.env.MODE)
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -48,10 +48,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true })
           
-          const response = await axios.post('/auth/login', {
-            email,
-            password
-          })
+          const response = await authAPI.login(email, password)
 
           if (response.data.success) {
             const { user, token, refreshToken } = response.data
@@ -60,8 +57,9 @@ export const useAuthStore = create<AuthState>()(
             Cookies.set('token', token, { expires: 7 })
             Cookies.set('refreshToken', refreshToken, { expires: 30 })
             
-            // Set axios default header
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+            // Store in localStorage for API service
+            localStorage.setItem('token', token)
+            localStorage.setItem('refreshToken', refreshToken)
             
             set({
               user,
@@ -89,11 +87,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true })
           
-          const response = await axios.post('/auth/register', {
-            name,
-            email,
-            password
-          })
+          const response = await authAPI.register(name, email, password)
 
           set({ isLoading: false })
           
@@ -116,8 +110,9 @@ export const useAuthStore = create<AuthState>()(
         Cookies.remove('token')
         Cookies.remove('refreshToken')
         
-        // Clear axios header
-        delete axios.defaults.headers.common['Authorization']
+        // Clear localStorage
+        localStorage.removeItem('token')
+        localStorage.removeItem('refreshToken')
         
         set({
           user: null,
@@ -129,7 +124,7 @@ export const useAuthStore = create<AuthState>()(
 
       verifyEmail: async (token: string) => {
         try {
-          const response = await axios.post('/auth/verify-email', { token })
+          const response = await authAPI.verifyEmail(token)
           
           if (response.data.success) {
             return { success: true }
@@ -146,7 +141,7 @@ export const useAuthStore = create<AuthState>()(
 
       forgotPassword: async (email: string) => {
         try {
-          const response = await axios.post('/auth/forgot-password', { email })
+          const response = await authAPI.forgotPassword(email)
           
           if (response.data.success) {
             return { success: true }
@@ -163,10 +158,7 @@ export const useAuthStore = create<AuthState>()(
 
       resetPassword: async (token: string, password: string) => {
         try {
-          const response = await axios.post('/auth/reset-password', {
-            token,
-            password
-          })
+          const response = await authAPI.resetPassword(token, password)
           
           if (response.data.success) {
             return { success: true }
@@ -183,7 +175,7 @@ export const useAuthStore = create<AuthState>()(
 
       sendOTP: async (email: string) => {
         try {
-          const response = await axios.post('/auth/send-otp', { email })
+          const response = await authAPI.sendOTP(email)
           
           if (response.data.success) {
             return { success: true }
@@ -200,7 +192,7 @@ export const useAuthStore = create<AuthState>()(
 
       verifyOTP: async (email: string, otp: string) => {
         try {
-          const response = await axios.post('/auth/verify-otp', { email, otp })
+          const response = await authAPI.verifyOTP(email, otp)
           
           if (response.data.success) {
             const { user, token, refreshToken } = response.data
@@ -209,8 +201,9 @@ export const useAuthStore = create<AuthState>()(
             Cookies.set('token', token, { expires: 7 })
             Cookies.set('refreshToken', refreshToken, { expires: 30 })
             
-            // Set axios default header
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+            // Store in localStorage for API service
+            localStorage.setItem('token', token)
+            localStorage.setItem('refreshToken', refreshToken)
             
             set({
               user,
@@ -239,9 +232,7 @@ export const useAuthStore = create<AuthState>()(
             return false
           }
 
-          const response = await axios.post('/auth/refresh', {
-            refreshToken
-          })
+          const response = await authAPI.refreshToken(refreshToken)
 
           if (response.data.success) {
             const { token, refreshToken: newRefreshToken } = response.data
@@ -250,8 +241,9 @@ export const useAuthStore = create<AuthState>()(
             Cookies.set('token', token, { expires: 7 })
             Cookies.set('refreshToken', newRefreshToken, { expires: 30 })
             
-            // Update axios header
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+            // Update localStorage
+            localStorage.setItem('token', token)
+            localStorage.setItem('refreshToken', newRefreshToken)
             
             set({
               token,
