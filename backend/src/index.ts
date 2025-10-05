@@ -20,10 +20,37 @@ connectDB()
 // Middleware
 console.log('🔧 Setting up middleware...')
 app.use(helmet())
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true
-}))
+// CORS configuration
+const corsOptions = {
+  origin: function (origin: string | undefined, callback: Function) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true)
+    
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'https://andromindai.vercel.app',
+      'https://andromindai.vercel.app/',
+      process.env.CORS_ORIGIN,
+      process.env.FRONTEND_URL
+    ].filter(Boolean)
+    
+    if (allowedOrigins.includes(origin)) {
+      console.log('✅ CORS allowed origin:', origin)
+      callback(null, true)
+    } else {
+      console.log('❌ CORS blocked origin:', origin)
+      console.log('📋 Allowed origins:', allowedOrigins)
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  exposedHeaders: ['Set-Cookie']
+}
+
+app.use(cors(corsOptions))
 app.use(cookieParser())
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
@@ -67,6 +94,7 @@ app.listen(PORT, () => {
   console.log(`🔐 Auth endpoints: http://localhost:${PORT}/api/auth`)
   console.log(`💬 Chat endpoints: http://localhost:${PORT}/api/chat`)
   console.log(`🌍 CORS Origin: ${process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:5173'}`)
+console.log(`🔗 Allowed Origins: http://localhost:5173, http://localhost:3000, https://andromindai.vercel.app, https://andromindai.vercel.app/`)
   console.log('🎉 ==========================================')
   console.log('')
 })
