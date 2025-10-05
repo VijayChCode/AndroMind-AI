@@ -3,6 +3,9 @@ import axios from 'axios'
 // Configure API base URL
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://andromind-ai.onrender.com/api'
 
+console.log('🔧 API Service initialized with baseURL:', API_BASE_URL)
+console.log('🌍 Environment VITE_API_URL:', import.meta.env.VITE_API_URL)
+
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -42,11 +45,16 @@ api.interceptors.response.use(
 
 // Auth API calls
 export const authAPI = {
-  login: (email: string, password: string) => 
-    api.post('/auth/login', { email, password }),
+  login: (email: string, password: string) => {
+    console.log('🔐 API Login called with baseURL:', api.defaults.baseURL)
+    return api.post('/auth/login', { email, password })
+  },
   
-  register: (name: string, email: string, password: string) => 
-    api.post('/auth/register', { name, email, password }),
+  register: (name: string, email: string, password: string) => {
+    console.log('📝 API Register called with baseURL:', api.defaults.baseURL)
+    console.log('📝 Full URL will be:', api.defaults.baseURL + '/auth/register')
+    return api.post('/auth/register', { name, email, password })
+  },
   
   verifyEmail: (token: string) => 
     api.post('/auth/verify-email', { token }),
