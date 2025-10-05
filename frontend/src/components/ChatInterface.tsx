@@ -53,7 +53,7 @@ const ChatInterface = () => {
     setTyping(true)
     
     try {
-      const response = await chatAPI.sendMessage(userMessage, currentChatId)
+      const response = await chatAPI.sendMessage(userMessage, currentChatId || undefined)
       
       // Add AI response
       addMessage({
